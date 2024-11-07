@@ -11,13 +11,15 @@ export class TodosController {
   constructor() {}
 
   public getTodos = (req: Request, res: Response) => {
-    return res.json(todos);
+    res.json(todos);
   };
 
   public getTodoById = (req: Request, res: Response) => {
     const id = +req.params.id;
-    if (isNaN(id))
-      return res.status(400).json({ error: "ID argument is not a number" });
+    if (isNaN(id)) {
+      res.status(400).json({ error: "ID argument is not a number" });
+      return;
+    }
 
     const todo = todos.find((todo) => todo.id === id);
 
@@ -28,8 +30,10 @@ export class TodosController {
 
   public createTodo = (req: Request, res: Response) => {
     const { text } = req.body;
-    if (!text)
-      return res.status(400).json({ error: "Text property is required" });
+    if (!text) {
+      res.status(400).json({ error: "Text property is required" });
+      return;
+    }
     const newTodo = {
       id: todos.length + 1,
       text: text,
@@ -43,12 +47,16 @@ export class TodosController {
 
   public updateTodo = (req: Request, res: Response) => {
     const id = +req.params.id;
-    if (isNaN(id))
-      return res.status(400).json({ error: "ID argument is not a number" });
+    if (isNaN(id)) {
+      res.status(400).json({ error: "ID argument is not a number" });
+      return;
+    }
 
     const todo = todos.find((todo) => todo.id === id);
-    if (!todo)
-      return res.status(404).json({ error: `Todo with id ${id} not found` });
+    if (!todo) {
+      res.status(404).json({ error: `Todo with id ${id} not found` });
+      return;
+    }
 
     const { text, completedAt } = req.body;
 
@@ -56,7 +64,6 @@ export class TodosController {
     completedAt === "null"
       ? (todo.completedAt = null)
       : (todo.completedAt = new Date(completedAt || todo.completedAt));
-
     res.json(todo);
   };
 
@@ -64,8 +71,10 @@ export class TodosController {
     const id = +req.params.id;
 
     const todo = todos.find((todo) => todo.id === id);
-    if (!todo)
-      return res.status(404).json({ error: `Todo with id ${id} not found` });
+    if (!todo) {
+      res.status(404).json({ error: `Todo with id ${id} not found` });
+      return;
+    }
 
     todos.splice(todos.indexOf(todo), 1);
     res.json(todo);
